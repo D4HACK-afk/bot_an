@@ -18,16 +18,12 @@ intents.message_content = True
 # Definimos el prefijo "$" para que coincida con tu "$hello"
 bot = commands.Bot(command_prefix="$", intents=intents)
 
-# ==========================================
-# 🟢 EVENTOS
-# ==========================================
+#  EVENTOS
 @bot.event
 async def on_ready():
     print(f'¡Bot listo! Conectado como {bot.user}')
 
-# ==========================================
-# ⚡ COMANDOS REALES
-# ==========================================
+# COMANDOS REALES
 
 # Tu comando original '$hello' convertido a formato de comando real
 @bot.command()
@@ -39,14 +35,14 @@ async def hello(ctx):
 async def scan(ctx):
     # 1. Verificamos si el usuario subió un archivo
     if not ctx.message.attachments:
-        await ctx.send("❌ Por favor, sube un archivo junto con el comando `$scan`.")
+        await ctx.send("Por favor, sube un archivo junto con el comando `$scan`.")
         return
 
     # 2. Tomamos el archivo y guardamos su nombre real
     archivo = ctx.message.attachments[0]
     nombre_temporal = archivo.filename
 
-    await ctx.send(f"📥 Recibiendo `{nombre_temporal}`... Analizando huella dactilar.")
+    await ctx.send(f"Recibiendo `{nombre_temporal}`... Analizando huella dactilar.")
 
     # 3. Descargamos el archivo temporalmente en tu computadora para poder leerlo
     await archivo.save(nombre_temporal)
@@ -59,10 +55,10 @@ async def scan(ctx):
 
     if resultado:
         # CASO A: Ya estaba registrado en tu base de datos
-        await ctx.send(f"⚡ **¡Ya conozco este archivo!**\n**Resultado guardado:** {resultado}")
+        await ctx.send(f"**¡Ya conozco este archivo!**\n**Resultado guardado:** {resultado}")
     else:
         # CASO B: Es un archivo nuevo
-        await ctx.send(f"🔍 **Archivo nuevo detectado.**\n**Hash:** `{huella}`\n*(Aquí es donde llamaremos a Pablo para usar la API de VirusTotal)*")
+        await ctx.send(f"**Archivo nuevo detectado.**\n**Hash:** `{huella}`\n*(Aquí es donde llamaremos a Pablo para usar la API de VirusTotal)*")
         
         # Simulamos que lo guardamos para la próxima vez
         data_base.guardar_resultado(huella, nombre_temporal, "Limpio (Simulado - Falta API)")
