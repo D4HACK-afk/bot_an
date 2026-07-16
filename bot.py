@@ -3,7 +3,7 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-import data_base  # <-- Conectamos tu base de datos aquí
+import data_base  
 
 # 2. Cargamos las variables secretas del archivo .env
 load_dotenv()
