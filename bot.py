@@ -76,14 +76,11 @@ async def quiensoy(ctx):
     await ctx.send(f"jelouda, su nombre es **{usuario}**, usted esta escribiendo desde el canal **#{canal}** en el servidor **'{servidor}'**")
 
 #comando 3 $sumar
-@bot.command()
-async def sumar(ctx, numero1: int, numero2: int):
-    resultado = numero1 + numero2
-    await ctx.send(f"resultado = **{resultado}**")
+#Elimine la funcion de suma completamente porque no era deseada!
 
 #comando experimental para mejorar el comando anterior
 @bot.command()
-async def plus(ctx,numero1: int,simbolo: str,numero2: int):
+async def calcula(ctx,numero1: int,simbolo: str,numero2: int):
     calculo_final = 0 
     if simbolo == "+": 
         calculo_final = numero1+numero2
