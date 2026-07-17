@@ -67,5 +67,37 @@ async def scan(ctx):
     if os.path.exists(nombre_temporal):
         os.remove(nombre_temporal)
 
+#comando 2 $quiensoy (este comando solo es de practica sirve para identificar el usuario y el canal junto con el servidor en el que se encuentra)
+@bot.command()
+async def quiensoy(ctx):
+    usuario = ctx.author.name
+    canal = ctx.channel.name
+    servidor = ctx.guild.name
+    await ctx.send(f"jelouda, su nombre es **{usuario}**, usted esta escribiendo desde el canal **#{canal}** en el servidor **'{servidor}'**")
+
+#comando 3 $sumar
+@bot.command()
+async def sumar(ctx, numero1: int, numero2: int):
+    resultado = numero1 + numero2
+    await ctx.send(f"resultado = **{resultado}**")
+
+#comando experimental para mejorar el comando anterior
+@bot.command()
+async def plus(ctx,numero1: int,simbolo: str,numero2: int):
+    calculo_final = 0 
+    if simbolo == "+": 
+        calculo_final = numero1+numero2
+
+    elif simbolo == "-":
+        calculo_final = numero1-numero2
+
+    elif simbolo == "/":
+        calculo_final = numero1/numero2
+
+    elif simbolo == "*":
+        calculo_final = numero1*numero2
+
+    await ctx.send(f"resultado = **{calculo_final}**")
+
 # 3. Arrancamos el bot usando la variable que cargó el .env (¡sin comillas!)
 bot.run(DISCORD_TOKEN)
