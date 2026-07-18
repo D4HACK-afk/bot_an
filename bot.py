@@ -10,54 +10,47 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
 
-# Configuración de permisos (Intents)
 intents = discord.Intents.default()
 intents.message_content = True
 
-# CAMBIO CLAVE: Usamos 'bot = commands.Bot' en lugar de 'client'
-# Definimos el prefijo "$" para que coincida con tu "$hello"
 bot = commands.Bot(command_prefix="$", intents=intents)
 
-#  EVENTOS
+
+
+#*  EVENTOS........................................................................./
 @bot.event
 async def on_ready():
     print(f'¡Bot listo! Conectado como {bot.user}')
 
-# COMANDOS REALES
+#*  COMANDOS........................................................................./
 
-# Tu comando original '$hello' convertido a formato de comando real
+#! comando $hello
 @bot.command()
 async def hello(ctx):
     await ctx.send('Hello!')
 
-# Tu nuevo comando de escaneo integrado con tu base de datos
+#! comando $scan 
 @bot.command()
 async def scan(ctx):
-    # 1. Verificamos si el usuario subió un archivo
+   
     if not ctx.message.attachments:
         await ctx.send("Por favor, sube un archivo junto con el comando `$scan`.")
         return
 
-    # 2. Tomamos el archivo y guardamos su nombre real
     archivo = ctx.message.attachments[0]
     nombre_temporal = archivo.filename
 
     await ctx.send(f"Recibiendo `{nombre_temporal}`... Analizando huella dactilar.")
 
-    # 3. Descargamos el archivo temporalmente en tu computadora para poder leerlo
     await archivo.save(nombre_temporal)
 
-    # 4. USAMOS TU CÓDIGO: Calculamos la huella (SHA-256)
     huella = data_base.calcular_hash(nombre_temporal)
 
-    # 5. USAMOS TU CÓDIGO: Buscamos en tu cuaderno de notas (scans.db)
     resultado = data_base.obtain_resultado_local(huella) if hasattr(data_base, 'obtain_resultado_local') else data_base.obtener_resultado_local(huella)
 
     if resultado:
-        # CASO A: Ya estaba registrado en tu base de datos
         await ctx.send(f"**¡Ya conozco este archivo!**\n**Resultado guardado:** {resultado}")
     else:
-        # CASO B: Es un archivo nuevo
         await ctx.send(f"**Archivo nuevo detectado.**\n**Hash:** `{huella}`\n*(Aquí es donde llamaremos a Pablo para usar la API de VirusTotal)*")
         
         # Simulamos que lo guardamos para la próxima vez
@@ -67,7 +60,7 @@ async def scan(ctx):
     if os.path.exists(nombre_temporal):
         os.remove(nombre_temporal)
 
-#comando 2 $quiensoy (este comando solo es de practica sirve para identificar el usuario y el canal junto con el servidor en el que se encuentra)
+#! comando $quiensoy
 @bot.command()
 async def quiensoy(ctx):
     usuario = ctx.author.name
@@ -75,11 +68,7 @@ async def quiensoy(ctx):
     servidor = ctx.guild.name
     await ctx.send(f"jelouda, su nombre es **{usuario}**, usted esta escribiendo desde el canal **#{canal}** en el servidor **'{servidor}'**")
 
-#comando 3 $sumar
-#Elimine la funcion de suma completamente porque no era deseada!
-
-#El simbolo de "*" le indica al bot que omita los espacios en blanco asi no se va confundir cuando vaya a calcular
-#el @bot.command(aliases=[ sirve para colocarle diferentes comandos para que funcione con una misma funcion
+#! comando $calcula = ['calcular', 'restar', 'multiplicar', 'dividir', 'sumar', 'resta', 'suma', 'divide', 'multiplica', 'multiplicacion', 'division']
 @bot.command(aliases=['calcular', 'restar', 'multiplicar', 'dividir', 'sumar', 'resta', 'suma', 'divide', 'multiplica', 'multiplicacion', 'division'])
 async def calcula(ctx, *, operacion: str):
     patron = r"(\d+)\s*([\+\-\*/])\s*(\d+)" 
@@ -88,11 +77,11 @@ async def calcula(ctx, *, operacion: str):
     if not busqueda:
         await ctx.send("El formato que usaste para para ejecutar tu operacion es incorrecto usa mejor el siguiente Ejemplo: $calcular 20+20 o tambien $calcular 40  +  40")
         return
-#/............................................../
+
     numero1 = int(busqueda.group(1))
     simbolo = busqueda.group(2)
     numero2 = int(busqueda.group(3))
-#/............................................../
+
     calculo_final = 0 
     if simbolo == "+": 
         calculo_final = numero1+numero2
@@ -111,6 +100,4 @@ async def calcula(ctx, *, operacion: str):
 
     await ctx.send(f"resultado = **{calculo_final}**")
 
-
-# 3. Arrancamos el bot usando la variable que cargó el .env (¡sin comillas!)
 bot.run(DISCORD_TOKEN)
