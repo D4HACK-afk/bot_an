@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import data_base  
-
+import re
 # 2. Cargamos las variables secretas del archivo .env
 load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -78,9 +78,21 @@ async def quiensoy(ctx):
 #comando 3 $sumar
 #Elimine la funcion de suma completamente porque no era deseada!
 
-#comando experimental para mejorar el comando anterior
-@bot.command()
-async def calcula(ctx,numero1: int,simbolo: str,numero2: int):
+#El simbolo de "*" le indica al bot que omita los espacios en blanco asi no se va confundir cuando vaya a calcular
+#el @bot.command(aliases=[ sirve para colocarle diferentes comandos para que funcione con una misma funcion
+@bot.command(aliases=['calcular', 'restar', 'multiplicar', 'dividir', 'sumar', 'resta', 'suma', 'divide', 'multiplica', 'multiplicacion', 'division'])
+async def calcula(ctx, *, operacion: str):
+    patron = r"(\d+)\s*([\+\-\*/])\s*(\d+)" 
+    busqueda = re.search(patron, operacion)
+
+    if not busqueda:
+        await ctx.send("El formato que usaste para para ejecutar tu operacion es incorrecto usa mejor el siguiente Ejemplo: $calcular 20+20 o tambien $calcular 40  +  40")
+        return
+#/............................................../
+    numero1 = int(busqueda.group(1))
+    simbolo = busqueda.group(2)
+    numero2 = int(busqueda.group(3))
+#/............................................../
     calculo_final = 0 
     if simbolo == "+": 
         calculo_final = numero1+numero2
@@ -89,12 +101,16 @@ async def calcula(ctx,numero1: int,simbolo: str,numero2: int):
         calculo_final = numero1-numero2
 
     elif simbolo == "/":
+        if numero2 == 0:
+            await ctx.send("Error: No se puede dividir entre cero. Es literalmente imposible las reglas de nuestro universo no lo permiten.")
+            return
         calculo_final = numero1/numero2
 
     elif simbolo == "*":
         calculo_final = numero1*numero2
 
     await ctx.send(f"resultado = **{calculo_final}**")
+
 
 # 3. Arrancamos el bot usando la variable que cargó el .env (¡sin comillas!)
 bot.run(DISCORD_TOKEN)
