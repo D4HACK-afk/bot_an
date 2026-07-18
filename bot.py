@@ -32,7 +32,6 @@ async def hello(ctx):
 #! comando $scan 
 @bot.command()
 async def scan(ctx):
-   
     if not ctx.message.attachments:
         await ctx.send("Por favor, sube un archivo junto con el comando `$scan`.")
         return
@@ -53,10 +52,8 @@ async def scan(ctx):
     else:
         await ctx.send(f"**Archivo nuevo detectado.**\n**Hash:** `{huella}`\n*(Aquí es donde llamaremos a Pablo para usar la API de VirusTotal)*")
         
-        # Simulamos que lo guardamos para la próxima vez
         data_base.guardar_resultado(huella, nombre_temporal, "Limpio (Simulado - Falta API)")
 
-    # 6. Limpieza: Borramos el archivo de tu PC para no acumular basura
     if os.path.exists(nombre_temporal):
         os.remove(nombre_temporal)
 
