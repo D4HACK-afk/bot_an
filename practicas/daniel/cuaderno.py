@@ -14,7 +14,7 @@ import sqlite3
 #!conexion.commit()
 #!conexion.close()
 
-
+#*......................................................................................................../
 def crear_base_de_datos():
     conexion = sqlite3.connect("scans.db")
     ordenes = conexion.cursor()
@@ -22,15 +22,41 @@ def crear_base_de_datos():
     conexion.commit()
     conexion.close()
 
+
 crear_base_de_datos()
 print("Base de datos y tabla 'historial' creadas correctamente.")
-
+#*......................................................................................................../
 def crear_tabla_servidores():
     conexion = sqlite3.connect("scans.db")
     ordenes = conexion.cursor()
-    ordenes.execute("CREATE TABLE IF NOT EXISTS servidores(hash TEXT PRIMARY KEY, canal_alertas TEXT)")
+    ordenes.execute("CREATE TABLE IF NOT EXISTS servidores(id_servidor TEXT PRIMARY KEY, canal_alertas TEXT)")
     conexion.commit()
     conexion.close()
 
 crear_tabla_servidores()
 print("Tabla 'servidores' creada correctamente.")
+#*......................................................................................................../
+
+def guardar_resultado(variable_hash, variable_resultado):
+    conexion = sqlite3.connect("scans.db")
+    ordenes = conexion.cursor()
+    ordenes.execute("INSERT OR IGNORE INTO historial(hash, resultado) VALUES (?, ?)", (variable_hash, variable_resultado))
+    conexion.commit()
+    conexion.close()
+
+
+guardar_resultado("abc123", "Resultado de ejemplo")
+print("Resultado guardado correctamente en la tabla 'historial'.")
+#*......................................................................................................../
+
+def buscar_hash(variable_hash):
+    conexion = sqlite3.connect("scans.db")
+    ordenes = conexion.cursor()
+    ordenes.execute("SELECT resultado FROM historial WHERE hash = ?", (variable_hash,))
+    fila = ordenes.fetchone()
+    conexion.close()
+    return fila
+
+registro = buscar_hash("abc123")
+print("Resultado encontrado:", {registro})
+#*......................................................................................................../
