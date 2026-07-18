@@ -10,11 +10,11 @@ def calcular_hash(ruta_archivo):
         generador.update(contenido)            #*actualizar el generador con el contenido del archivo
         hash_final = generador.hexdigest()     #* obtener el hash final en formato hexadecimal(texto plano y numeros)
 #! condicional para detectar si el hash es igual al hash de un archivo malicioso conocido, si es asi se devuelve un mensaje de advertencia, si no se devuelve el hash final
-        hash_maligno = "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        hash_maligno = "1bf9d267dfeb48e42b64181ceb7e76944297ddc1bb6a0261323faff7e0ee6117"
     if hash_final == hash_maligno:
-        return "este archivo te podria romper el pc, es un archivo malicioso, por eso no te dare el hash, por favor no bras"    
+        return "este archivo te podria romper el pc, es un archivo malicioso, por eso no te dare el hash"    
     else: 
        return hash_final
     
-archivo = calcular_hash("prueba.txt")  #*llamar a la funcion y pasar la ruta del archivo
-print(f"este seria el resultado: {archivo}")
+ola = calcular_hash("hollow.jpg")
+print(f"El hash del archivo es: {ola}")
