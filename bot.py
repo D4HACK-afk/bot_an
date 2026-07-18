@@ -20,7 +20,12 @@ bot = commands.Bot(command_prefix="$", intents=intents)
 #*  EVENTOS........................................................................./
 @bot.event
 async def on_ready():
-    print(f'¡Bot listo! Conectado como {bot.user}')
+    data_base.make_base()
+    data_base.id_table()
+    print(f'--- Bot conectado con exito ---')
+    print(f'Nombre: {bot.user.name}')
+    print(f'ID: {bot.user.id}')
+    print(f'-------------------------------')
 
 #*  COMANDOS........................................................................./
 
@@ -31,31 +36,26 @@ async def hello(ctx):
 
 #! comando $scan 
 @bot.command()
-async def scan(ctx):
+async def scan(ctx): #funcion recibe lo que mando el usuario en el chat de discord
     if not ctx.message.attachments:
         await ctx.send("Por favor, sube un archivo junto con el comando `$scan`.")
         return
 
-    archivo = ctx.message.attachments[0]
-    nombre_temporal = archivo.filename
-
-    await ctx.send(f"Recibiendo `{nombre_temporal}`... Analizando huella dactilar.")
-
-    await archivo.save(nombre_temporal)
-
-    huella = data_base.calcular_hash(nombre_temporal)
-
-    resultado = data_base.obtain_resultado_local(huella) if hasattr(data_base, 'obtain_resultado_local') else data_base.obtener_resultado_local(huella)
-
-    if resultado:
-        await ctx.send(f"**¡Ya conozco este archivo!**\n**Resultado guardado:** {resultado}")
+    temporal_file = ctx.message.attachments[0]
+    file_name = temporal_file.filename  #se obtiene el nombre del archivo subido
+    await temporal_file.save(file_name)
+    file_whit_hash = data_base.machine_hash(file_name) #se transforma el archivo en hash para poder guardarlo en la base de datos y compararlo con otros hashes
+    results = data_base.lock_hash(file_whit_hash)   #se busca el hash en la base de datos para ver si ya existe o no, si existe se devuelve el resultado, si no existe se guarda el hash y el resultado en la base de datos
+    if results:                                         # se crea una condicional para ver si el hash ya existe en la base de datos, si existe se envia un mensaje al usuario diciendo que el archivo ya estaba guardado en la base de datos, si no existe se guarda el hash y el resultado en la base de datos
+        await ctx.send(f"este archivo ya estaba guardado en la base: **{file_whit_hash}**")
     else:
-        await ctx.send(f"**Archivo nuevo detectado.**\n**Hash:** `{huella}`\n*(Aquí es donde llamaremos a Pablo para usar la API de VirusTotal)*")
-        
-        data_base.guardar_resultado(huella, nombre_temporal, "Limpio (Simulado - Falta API)")
+        await ctx.send("No se encontró ningún resultado para el hash del archivo.")
+        data_base.save_result(file_whit_hash, "Limpio (Simulado)")
 
-    if os.path.exists(nombre_temporal):
-        os.remove(nombre_temporal)
+    if os.path.exists(file_name): # se elimina el archivo temporal subido por el usuario para no ocupar espacio en el servidor
+        os.remove(file_name)
+
+    #*hasta aqui llega las funciones de la base de datos, ahora se puede agregar mas funciones para el bot, como por ejemplo, enviar un mensaje al usuario si el archivo es malicioso o no, o enviar un mensaje al canal si el archivo es malicioso o no, etc.
 
 #! comando $quiensoy
 @bot.command()

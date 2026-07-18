@@ -1,4 +1,53 @@
 import sqlite3
 import hashlib
 import os
+import discord
+
+#!funciones hash
+#*hash_generator....................................................................../
+
+def machine_hash(path_file):
+    with open (path_file, "rb") as file_rb:
+        final_file = file_rb.read()
+        hash_machine = hashlib.sha256()
+        hash_machine.update(final_file)
+        final_hash = hash_machine.hexdigest()
+        return final_hash
+#*.................................................................................../
+
+#! funciones SQlite3
+#*................................................................................../
+
+def make_base():
+    base = sqlite3.connect("scans.db") #creacion de base de datos
+    cursor = base.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS base_bot(hash TEXT PRIMARY KEY, trigger TEXT)")
+    base.commit()
+    base.close()
+#*..................................................................................
+
+def id_table():
+    id_table = sqlite3.connect("scans.db")  #creacion de tablas
+    command_table = id_table.cursor()
+    command_table.execute("CREATE TABLE IF NOT EXISTS server_bot(id_hash TEXT PRIMARY KEY, trigger_alerts TEXT)")
+    id_table.commit()
+    id_table.close()
+#*................................................................................../
+
+def save_result(hash_variable, result_variable):
+    save_result = sqlite3.connect("scans.db")
+    command_save = save_result.cursor()
+    command_save.execute("INSERT OR IGNORE INTO base_bot(hash, trigger) VALUES (?, ?)", (hash_variable, result_variable))
+    save_result.commit()
+    save_result.close()
+#*................................................................................../
+
+def lock_hash(hash_variable):
+    lock_hash = sqlite3.connect("scans.db")
+    command_lock = lock_hash.cursor()
+    command_lock.execute("SELECT trigger FROM base_bot WHERE hash = ?", (hash_variable,))
+    row = command_lock.fetchone()
+    lock_hash.close()
+    return row[0] if row else None
+#*................................................................................../
 
