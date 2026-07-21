@@ -21,7 +21,7 @@ def machine_hash(path_file):
 def make_base():
     base = sqlite3.connect("scans.db") #creacion de base de datos
     cursor = base.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS base_bot(hash TEXT PRIMARY KEY, trigger TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS base_bot(hash TEXT PRIMARY KEY, trigger TEXT, file_name TEXT)")
     base.commit()
     base.close()
 #*..................................................................................
@@ -29,7 +29,7 @@ def make_base():
 def id_table():
     id_table = sqlite3.connect("scans.db")  #creacion de tablas
     command_table = id_table.cursor()
-    command_table.execute("CREATE TABLE IF NOT EXISTS server_bot(id_hash TEXT PRIMARY KEY, trigger_alerts TEXT)")
+    command_table.execute("CREATE TABLE IF NOT EXISTS server_bot(id_hash TEXT PRIMARY KEY, trigger_alerts TEXT,)")
     id_table.commit()
     id_table.close()
 #*................................................................................../
@@ -37,7 +37,7 @@ def id_table():
 def save_result(hash_variable, result_variable):
     save_result = sqlite3.connect("scans.db")
     command_save = save_result.cursor()
-    command_save.execute("INSERT OR IGNORE INTO base_bot(hash, trigger) VALUES (?, ?)", (hash_variable, result_variable))
+    command_save.execute("INSERT OR IGNORE INTO base_bot(hash, trigger, file_name) VALUES (?, ?)", (hash_variable, result_variable))
     save_result.commit()
     save_result.close()
 #*................................................................................../
@@ -50,4 +50,11 @@ def lock_hash(hash_variable):
     lock_hash.close()
     return row[0] if row else None
 #*................................................................................../
-
+ 
+def get_history():
+    get_history = sqlite3.connect("scans.db") #historial de la tabla
+    command_select = get_history.cursor()
+    command_select.execute("SELECT file_name, trigger FROM base_bot LIMIT 10") #ultimos 10 cambios de la tabla "file_name" y "trigger"
+    history_result = command_select.fetchall()  
+    get_history.close() 
+    return history_result 
