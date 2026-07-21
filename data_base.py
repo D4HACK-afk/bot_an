@@ -58,3 +58,4 @@ def get_history():
     history_result = command_select.fetchall()  
     get_history.close() 
     return history_result 
+#*................................................................................../
