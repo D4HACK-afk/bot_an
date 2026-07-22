@@ -97,4 +97,23 @@ async def calcula(ctx, *, operacion: str):
 
     await ctx.send(f"resultado = **{calculo_final}**")
 
+#Aqui estou colocando [from] ya que indica que viene del archivo (data_base) y al colocar import (get_history) estoy llamando al codigo creado por daniel
+from data_base import get_history
+@bot.command(aliases=['historial_cmd', 'historia',])
+async def historial(ctx):
+    registros = get_history()
+    if not registros:
+        await ctx.send ('**No hay ningun registro por el momento**')
+        return
+#Aqui use la funcion Embed que me permite darle color a la interfaz del mensaje
+#Tambien coloque un titulo y una descripcion para el mensaje para cuando el usuario ejecute el comando para ver su Historial de calculos le aparezca un mensaje indicandole que esos son los datos que tenemos almacenado en la base de datos
+    embed = discord.Embed (
+        title = "**Historial de  registros guardados en nuestra base de datos**", 
+        description = "Aqui tienes los 10 ultimos calculos realizados por ti, registrados en nuestra base de datos",
+        Color=discord.Color.Blue() 
+        )
+        
+    texto_hitorial=""
+    for i (nombre_archivo, comando) in enumerate(registros, start=1): 
+    texto_hitorial += "f**{i}.** Archivo "
 bot.run(DISCORD_TOKEN)
